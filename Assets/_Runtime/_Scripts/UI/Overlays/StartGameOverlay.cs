@@ -16,6 +16,7 @@ public class StartGameOverlay : MonoBehaviour
 //TODO: when overlay is actived in scene, this Unity function is not called
     private void OnEnable() 
     {
+        gameMode.SaveGame.LoadGame();
         UpdateUI();
     }
 //

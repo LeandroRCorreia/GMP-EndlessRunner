@@ -1,71 +1,71 @@
-using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
+using Newtonsoft.Json;
+using System.IO;
 
 public class ScoreStatusData
 {
-    public int highestScore;
-    public int lastScore;
-    public int totalCherriesPicked;
+    public int highestScore = 0;
+    public int lastScore = 0;
+    public int totalCherriesPicked = 0;
 }
 
-public class AudioPreferences
+public class AudioPreferencesData
 {
-    public float masterVolume;
-    public float musicVolume;
-    public float SFXVolume;
+    public float masterVolume = 0.5f;
+    public float musicVolume = 0.5f;
+    public float SFXVolume = 0.5f;
 
 }
 
 public class SaveData
 {
     public ScoreStatusData ScoreStatusData;
-    public AudioPreferences SettingsData;
+    public AudioPreferencesData SettingsData;
 
 }
 
 public class GameSaver : MonoBehaviour
 {
-    public int GetHighestScore => PlayerPrefs.GetInt(SaveGameKeys.HIGHEST_SCORE_KEY, 0);
-    public int GetLastScore => PlayerPrefs.GetInt(SaveGameKeys.LAST_SCORE_KEY, 0);
-    public int GetTotalCherriesPicked => PlayerPrefs.GetInt(SaveGameKeys.TOTAL_CHERRIES_PICKED_KEY, 0);
-
     public SaveData CurrentSaveData {get; private set;}
 
     private bool IsLoaded => CurrentSaveData != null ? CurrentSaveData.ScoreStatusData != null && CurrentSaveData.SettingsData != null : false;
+    
+    private string DataOriginPath => $"{Application.persistentDataPath}" + "/Data";
+    private string PreferencesAudioDataPath => DataOriginPath + "/PreferencesAudioData.txt";
+    private string ScoreStatusDataPath => DataOriginPath + "/ScoreStatusData.txt";
+
+    private void Awake()
+    {
+        CheckIfDataOriginDirectoryExists();
+    }
+
+    private void CheckIfDataOriginDirectoryExists()
+    {
+        if (!Directory.Exists(DataOriginPath))
+        {
+            Directory.CreateDirectory(DataOriginPath);
+        }
+    }
 
     public void SaveScoreData(ScoreStatusData data)
     {
-        PlayerPrefs.SetInt(SaveGameKeys.HIGHEST_SCORE_KEY, data.highestScore);
-        PlayerPrefs.SetInt(SaveGameKeys.TOTAL_CHERRIES_PICKED_KEY, data.totalCherriesPicked);
-        PlayerPrefs.SetInt(SaveGameKeys.LAST_SCORE_KEY, data.lastScore);
-        PlayerPrefs.Save();
+        Serialized<ScoreStatusData>(ScoreStatusDataPath, data);
         CurrentSaveData.ScoreStatusData = data;
     }
 
-    public void SaveSettingsData(AudioPreferences data)
+    public void SaveSettingsData(AudioPreferencesData data)
     {
-        PlayerPrefs.SetFloat(SaveGameKeys.MAIN_VOLUME_KEY, data.masterVolume);
-        PlayerPrefs.SetFloat(SaveGameKeys.MUSIC_VOLUME_KEY, data.musicVolume);
-        PlayerPrefs.SetFloat(SaveGameKeys.SFX_VOLUME_KEY, data.SFXVolume);
-        PlayerPrefs.Save();
+        Serialized<AudioPreferencesData>(PreferencesAudioDataPath, data);
         CurrentSaveData.SettingsData = data;
     }
 
     public void LoadGame()
     {
         if(IsLoaded) return;
-        ScoreStatusData scoreData = new ScoreStatusData()
-        {
-            highestScore = GetHighestScore,
-            lastScore = GetLastScore,
-            totalCherriesPicked = GetTotalCherriesPicked
-        };
-        AudioPreferences settingsData = new AudioPreferences()
-        {
-            masterVolume = PlayerPrefs.GetFloat(SaveGameKeys.MAIN_VOLUME_KEY, 1f),
-            musicVolume = PlayerPrefs.GetFloat(SaveGameKeys.MUSIC_VOLUME_KEY, 0.75f),
-            SFXVolume = PlayerPrefs.GetFloat(SaveGameKeys.SFX_VOLUME_KEY, 0.75f),
-        };
+        
+        ScoreStatusData scoreData = Deserialize<ScoreStatusData>(ScoreStatusDataPath);
+        AudioPreferencesData settingsData = Deserialize<AudioPreferencesData>(PreferencesAudioDataPath);
+
         CurrentSaveData = new SaveData()
         {
             ScoreStatusData = scoreData,
@@ -74,11 +74,54 @@ public class GameSaver : MonoBehaviour
 
     }
 
+    private void Serialized<T>(string path, T data) where T : class
+    {
+        JsonSerializer serializer = new JsonSerializer();
+
+        using(FileStream stream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite))
+        using(StreamWriter file = new StreamWriter(stream))
+        using(JsonWriter writer = new JsonTextWriter(file))
+        {
+            serializer.Serialize(writer, data);
+        }
+
+    }
+
+    private T Deserialize<T>(string path) where T: class, new()
+    {
+        JsonSerializer serializer = new JsonSerializer();
+
+        if(!File.Exists(path))
+        {
+            T data = new T();
+            Serialized<T>(path, data);
+            return data;
+        }
+        else
+        {   
+            using(FileStream stream = new FileStream(path, FileMode.OpenOrCreate, FileAccess.ReadWrite))
+            using(StreamReader file = new StreamReader(stream))
+            using(JsonReader reader = new JsonTextReader(file))
+            {   
+                T data = serializer.Deserialize<T>(reader);
+
+                return data;
+            }
+        }
+
+    }
+
     public void ResetScoreData()
     {
-        PlayerPrefs.DeleteAll();
+        DeleteAllData();
         CurrentSaveData = null;
         LoadGame();
+    }
+
+    private void DeleteAllData()
+    {
+        Directory.Delete(DataOriginPath, true);
+        CheckIfDataOriginDirectoryExists();
         
     }
 

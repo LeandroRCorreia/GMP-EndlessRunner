@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -80,7 +78,7 @@ public class AudioController : MonoBehaviour
 
     public void SaveSettings()
     {
-        AudioPreferences data = new AudioPreferences()
+        AudioPreferencesData data = new AudioPreferencesData()
         {
             masterVolume = MainVolumePercent,
             musicVolume = MusicVolumePercent,
