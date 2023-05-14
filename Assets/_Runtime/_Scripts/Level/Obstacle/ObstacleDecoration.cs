@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -15,10 +12,11 @@ public class ObstacleDecoration : MonoBehaviour
 
     private void Awake() 
     {
-        collisionAnimation.playAutomatically = false;
+        if(collisionAnimation != null) collisionAnimation.playAutomatically = false;
+
     }
 
-    public void PlayCollisionFeedBack()
+    public virtual void PlayCollisionFeedBack()
     {
         AudioUtility.PlayAudioCue(AudioSource, collisionAudio);
         if(collisionAnimation != null)

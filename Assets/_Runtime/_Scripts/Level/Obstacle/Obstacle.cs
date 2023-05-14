@@ -18,7 +18,7 @@ public class Obstacle : MonoBehaviour
         }
     }
 
-    public void PlayCollisionFeedBack(Collider collider)
+    public virtual void PlayCollisionFeedBack(Collider collider)
     {
         ObstacleDecoration obstacleDecoration = FindDecorationForCollider(collider);
         obstacleDecoration.PlayCollisionFeedBack();
