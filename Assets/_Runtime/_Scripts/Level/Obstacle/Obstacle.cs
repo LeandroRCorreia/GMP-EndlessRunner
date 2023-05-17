@@ -1,12 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Obstacle : MonoBehaviour
+public class Obstacle : MonoBehaviour, IPlayerCollisionReact
 {
     [SerializeField] private DecorationSpawner[] decorationSpawners;
 
     private List<ObstacleDecoration> obstacleDecorations = new List<ObstacleDecoration>();
-
 
     public void SpawnDecorations()
     {
@@ -44,6 +43,14 @@ public class Obstacle : MonoBehaviour
         }
 
         return minDistDecoration;
+    }
+
+    public void ReactPlayerCollision(in PlayerCollisionInfo playerCollisionInfo)
+    {
+        playerCollisionInfo.PlayerControl.Die();
+        playerCollisionInfo.playerAC.Die();
+        playerCollisionInfo.gameMode.OnGameOver();
+        PlayCollisionFeedBack(playerCollisionInfo.colliderFromReaction);
     }
 
 }

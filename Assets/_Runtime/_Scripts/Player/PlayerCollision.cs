@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(PlayerController))]
@@ -18,22 +16,16 @@ public class PlayerCollision : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Obstacle obstacle = other.GetComponent<Obstacle>();
-        if (obstacle != null)
+        if(other.TryGetComponent<IPlayerCollisionReact>(out IPlayerCollisionReact playerCollisionInterface))
         {
-            playerController.Die();
-            animationController.Die();
-            gameMode.OnGameOver();
-            Collider collider = playerController.GetComponentInChildren<Collider>();
-            obstacle.PlayCollisionFeedBack(other);
+            PlayerCollisionInfo data = new PlayerCollisionInfo(playerController,
+            animationController,
+            other,
+            gameMode);
+            playerCollisionInterface.ReactPlayerCollision(in data);
+            
         }
-        Pickup collectableFruit = other.GetComponent<Pickup>();
-        if(collectableFruit != null)
-        {
-            collectableFruit.OnPickedUp();
-            gameMode.OnCherriesPickup();
-        }
-        
 
     }
+    
 }

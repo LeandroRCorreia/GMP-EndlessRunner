@@ -1,11 +1,9 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(AudioSource))]
 [RequireComponent(typeof(BoxCollider))]
-public class Pickup : MonoBehaviour
+public class Pickup : MonoBehaviour, IPlayerCollisionReact
 {
-
     [SerializeField] private GameObject model;
     [SerializeField] private AudioClip pickupSound;
     [SerializeField] private float rotateSpeed = 100f;
@@ -14,7 +12,6 @@ public class Pickup : MonoBehaviour
     private BoxCollider boxCollider;
     private bool isCollected = false;
     private AudioSource AudioSource => audioSource == null ? GetComponent<AudioSource>() : audioSource;
-
 
     private void Awake() 
     {
@@ -34,6 +31,12 @@ public class Pickup : MonoBehaviour
         transform.Rotate(Vector3.up, rotateSpeed * Time.deltaTime, Space.Self);
     }
 
+    public void ReactPlayerCollision(in PlayerCollisionInfo playerCollisionInfo)
+    {
+        playerCollisionInfo.gameMode.OnCherriesPickup();
+        OnPickedUp();
+    }
+
     public void OnPickedUp()
     {
         if(isCollected) return;
@@ -43,5 +46,5 @@ public class Pickup : MonoBehaviour
         Destroy(gameObject, pickupSound.length);
 
     }
- 
+
 }
