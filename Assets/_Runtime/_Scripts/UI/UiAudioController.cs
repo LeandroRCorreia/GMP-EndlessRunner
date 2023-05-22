@@ -28,7 +28,6 @@ public class UiAudioController : MonoBehaviour
         AudioUtility.PlayAudioCue(AudioSource, clip);
     }
 
-
     private void Stop()
     {
         AudioSource.Stop();

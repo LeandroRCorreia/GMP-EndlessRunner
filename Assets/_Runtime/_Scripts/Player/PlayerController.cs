@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -19,6 +17,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float rollDistanceZ = 5;
     [SerializeField] private Collider regularCollider;
     [SerializeField] private Collider rollCollider;
+
+    [Header("Particles PowerUp")]
+    [SerializeField] private GameObject particlePowerUpMultiplier;
 
     private Vector3 initialPosition;
 
@@ -176,6 +177,11 @@ public class PlayerController : MonoBehaviour
         StopRoll();
         StopJump();
         DisableColliders();
+    }
+
+    public void SetParticlePowerUpActive(bool active)
+    {
+        particlePowerUpMultiplier.SetActive(active);
     }
 
 }

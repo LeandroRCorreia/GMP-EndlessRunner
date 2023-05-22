@@ -2,25 +2,26 @@ using UnityEngine;
 
 [RequireComponent(typeof(AudioSource))]
 [RequireComponent(typeof(BoxCollider))]
-public class Pickup : MonoBehaviour, IPlayerCollisionReact
+public abstract class Pickup : MonoBehaviour, IPlayerCollisionReact
 {
     [SerializeField] private GameObject model;
-    [SerializeField] private AudioClip pickupSound;
+    [SerializeField] private AudioClip pickupAudio;
     [SerializeField] private float rotateSpeed = 100f;
 
     private AudioSource audioSource;
     private BoxCollider boxCollider;
-    private bool isCollected = false;
+    protected bool isCollected = false;
+
+    private BoxCollider BoxColl => boxCollider == null ? GetComponent<BoxCollider>() : boxCollider;
     private AudioSource AudioSource => audioSource == null ? GetComponent<AudioSource>() : audioSource;
 
-    private void Awake() 
-    {
-        boxCollider = GetComponent<BoxCollider>();
-    }
+    protected virtual float LifeAfterPickup => pickupAudio.length;
 
+    protected abstract void ExecutePickupBehaviour(in PlayerCollisionInfo playerCollisionInfo);
+    
     private void Start() 
     {
-        boxCollider.isTrigger = true;    
+        BoxColl.isTrigger = true;    
         isCollected = false;
     }
 
@@ -33,18 +34,18 @@ public class Pickup : MonoBehaviour, IPlayerCollisionReact
 
     public void ReactPlayerCollision(in PlayerCollisionInfo playerCollisionInfo)
     {
-        playerCollisionInfo.gameMode.OnCherriesPickup();
-        OnPickedUp();
+        OnPickedUp(in playerCollisionInfo);
     }
 
-    public void OnPickedUp()
+    private void OnPickedUp(in PlayerCollisionInfo playerCollisionInfo)
     {
         if(isCollected) return;
         isCollected = true;
-        AudioUtility.PlayAudioCue(AudioSource, pickupSound);
+        
+        AudioUtility.PlayAudioCue(AudioSource, pickupAudio);
         if(model != null) model.SetActive(false);
-        Destroy(gameObject, pickupSound.length);
-
+        Destroy(gameObject, pickupAudio.length);
+        ExecutePickupBehaviour(playerCollisionInfo);
     }
 
 }

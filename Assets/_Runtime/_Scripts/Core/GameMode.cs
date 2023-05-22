@@ -25,14 +25,19 @@ public class GameMode : MonoBehaviour
     [SerializeField] private float startPlayerSpeed;
     [SerializeField] private float maxSpeedPlayer = 17;
     [SerializeField] private float timeToReachMaxSpeedInSeconds = 300f;
+    private GameSaver gameSaver;
     private float startGameTime;
+    private bool IsGameRunning;
     private float score = 0.0f;
+
+    [SerializeField] private float powerUpMultiplier = 0;
+    private float currentPowerUpTime = 0;
+    [SerializeField] public bool IsPowerUpMultiplierEnabled {get; private set;} = false;
+
     public int Score => Mathf.RoundToInt(score);
     public int TravelledDistance => Mathf.RoundToInt(player.transform.position.z - player.InitialPosition.z);
-    private bool IsGameRunning;
-    public int CherriesPicked {get; private set;}
-
-    private GameSaver gameSaver;
+    public int CherriesPicked {get;set;}
+    public int PeanutsPicked {get; set;}
 
     [Space]
 
@@ -61,7 +66,7 @@ public class GameMode : MonoBehaviour
             float timePercent = timeRunSeconds / timeToReachMaxSpeedInSeconds;
             player.ForwardSpeed = Mathf.Lerp(startPlayerSpeed, maxSpeedPlayer, timePercent);
 
-            float extraScoreMultiplier = 1 + timePercent;
+            float extraScoreMultiplier = 1 + timePercent + powerUpMultiplier;
             score += extraScoreMultiplier * scoreBaseMultiplier * player.ForwardSpeed * Time.deltaTime;
         }
 
@@ -95,20 +100,60 @@ public class GameMode : MonoBehaviour
         IsGameRunning = true;
     }
 
+    #region GamePlay
+
     public void OnPauseGame()
     {
         Time.timeScale = 0;
     }
 
-    public void OnCherriesPickup()
+    public void OnPowerUpMultiplier(in PowerUpMultiplierInfo powerUpMultiplierInfo)
     {
-        CherriesPicked++;
+        if(!IsPowerUpMultiplierEnabled)
+        {
+            StartCoroutine(PerformPowerUpMultiplier(powerUpMultiplierInfo));
+        }
+        else
+        {
+            currentPowerUpTime = 0;
+        }
+    }
+
+    private void StartPowerUpMultiplier(in PowerUpMultiplierInfo powerUpMultiplierInfo)
+    {
+        powerUpMultiplier = powerUpMultiplierInfo.multiplierPowerUp;
+        IsPowerUpMultiplierEnabled = true;
+        player.SetParticlePowerUpActive(true);
+    }
+
+    private IEnumerator PerformPowerUpMultiplier(PowerUpMultiplierInfo powerUpMultiplierInfo)
+    {
+        StartPowerUpMultiplier(in powerUpMultiplierInfo);
+        currentPowerUpTime = 0f;
+        
+        var endPowerUpTime = powerUpMultiplierInfo.secondsPowerUp; 
+        while(currentPowerUpTime < endPowerUpTime)
+        {
+            currentPowerUpTime += Time.deltaTime;
+            yield return null;
+        }
+        EndPowerUpMultiplier();
+    }
+
+    private void EndPowerUpMultiplier()
+    {
+        powerUpMultiplier = 0;
+        IsPowerUpMultiplierEnabled = false;
+        player.SetParticlePowerUpActive(false);
+
     }
 
     public void OnResumeGame()
     {
         Time.timeScale = 1;
     }
+
+    #endregion
 
     public void OnGameOver()
     {
@@ -118,7 +163,8 @@ public class GameMode : MonoBehaviour
         {
             highestScore = highestScore,
             lastScore = Score,
-            totalCherriesPicked = SaveGame.CurrentSaveData.ScoreStatusData.totalCherriesPicked + CherriesPicked
+            totalCherriesPicked = SaveGame.CurrentSaveData.ScoreStatusData.totalCherriesPicked + CherriesPicked,
+            totalPeanutsPicked = SaveGame.CurrentSaveData.ScoreStatusData.totalPeanutsPicked + PeanutsPicked
         };
         gameSaver.SaveScoreData(saveData);
 

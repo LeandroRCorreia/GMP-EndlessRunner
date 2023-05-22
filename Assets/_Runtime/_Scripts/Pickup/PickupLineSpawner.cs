@@ -1,17 +1,44 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class PickupLineSpawner : MonoBehaviour
 {
-    [SerializeField] private GameObject pickupPrefab;
+
+    [Header("Pickups")]
+    [SerializeField] private GameObject cherriePrefab;
+    [SerializeField] private GameObject peanutPrefab;
+
+    [Range(0, 1)]
+    [SerializeField] private float peanutChance = 0.1f;
+
+    [Space]
+
+    [Header("PowerUps")]
+    [SerializeField] private GameObject[] powerUpsOptions;
+
+    [Range(0, 1)]
+    [SerializeField] private float powerUpChance = 0.1f;
+
+    [Space]
+
+    [Header("Positioning")]
     [SerializeField] private float spaceBetweenPickups = 1.25f; 
     [SerializeField] private Transform start;
     [SerializeField] private Transform end;
 
+    public void SpawnPickups(Vector3[] skipPositions)
+    {
+        if(Random.value <= powerUpChance)
+        {
+            SpawnPowerUp();
+        }
+        else
+        {
+            SpawnPickupLine(skipPositions);
+        }
 
-    public void SpawnPickupLine(Vector3[] skipPositions)
+    }
+
+    private void SpawnPickupLine(Vector3[] skipPositions)
     {
         Vector3 currentSpawnPosition = start.position;
 
@@ -21,12 +48,21 @@ public class PickupLineSpawner : MonoBehaviour
         {
             if(!ShouldSkipPosition(currentSpawnPosition, skipPositions)) 
             {
-                Instantiate(pickupPrefab, currentSpawnPosition, Quaternion.identity, transform);
+                GameObject pickupInstance = Random.value < peanutChance ? peanutPrefab : cherriePrefab;
+                Instantiate(pickupInstance, currentSpawnPosition, Quaternion.identity, transform);
             }
             currentSpawnPosition.z += spaceBetweenPickups;
 
         }
 
+    }
+    
+    private void SpawnPowerUp()
+    {
+        var index = Random.Range(0, powerUpsOptions.Length);
+        var middleLanePositonZ = (end.position.z - start.position.z) * 0.5f;
+        var PowerUpposition = new Vector3(transform.position.x, transform.position.y, end.position.z);
+        var powerUpInstance = Instantiate(powerUpsOptions[index], PowerUpposition, Quaternion.identity, transform);
     }
 
     private bool ShouldSkipPosition(Vector3 currentSpawnPosition, Vector3[] skipPositions)
@@ -60,63 +96,5 @@ public class PickupLineSpawner : MonoBehaviour
         }
 
     }
-
-    // public void SpawnCherries(TrackSegment trackInstance)
-    // {
-    //     currentTrack = trackInstance;
-    //     ProcessSpawn(GetRandomTrackLaneCoordinatesX(currentTrack));
-    // }
-
-    // private float GetRandomTrackLaneCoordinatesX(TrackSegment trackSegment)
-    // {
-    //     return trackSegment.CoordinatesLane[Random.Range(0, trackSegment.CoordinatesLane.Length)];
-    // }
-
-    // private float MaxFruitsInTrack()
-    // {
-    //     return Mathf.Floor(currentTrack.Length / spacementBetweenFruitZ);
-    // }
-
-    // private float GetRandomQuantityFruitInTrack(float MaxFruitSpawn)
-    // {
-    //     return Mathf.Floor(Random.Range(3, MaxFruitSpawn));
-    // }
-
-    // private void ProcessSpawn(float laneSpawn)
-    // {
-    //     float maxFruitSpawn = MaxFruitsInTrack();
-    //     float numberFruitSpawn = GetRandomQuantityFruitInTrack(maxFruitSpawn);
-    //     float firstSpacement = spacementBetweenFruitZ * 0.5f;
-    //     Vector3 frontCoordinate = new Vector3(laneSpawn, 0, transform.position.z + firstSpacement);
-    //     Vector3 backCoordinate = new Vector3(laneSpawn, 0, transform.position.z - firstSpacement);
-    //     int i = 0;
-    //     SpawnFirstPairFruit(frontCoordinate, backCoordinate);
-    //     i+=2;
-
-    //     for (i = 0; i < numberFruitSpawn ; i += 2)
-    //     {
-    //         SpawnPairFruit(ref frontCoordinate, ref backCoordinate);
-    //     }
-
-    // }
-
-    // private void SpawnFirstPairFruit(Vector3 frontCoordinate, Vector3 backCoordinate)
-    // {
-    //     var cherrieFront = Instantiate(pickupPrefab, transform);
-    //     var cherrieBack = Instantiate(pickupPrefab, transform);
-    //     cherrieFront.transform.position = frontCoordinate;
-    //     cherrieBack.transform.position = backCoordinate;
-    // }
-
-    // private void SpawnPairFruit(ref Vector3 vFrontCoordinate, ref Vector3 vBackCoordinate)
-    // {
-    //     vFrontCoordinate.z += spacementBetweenFruitZ;
-    //     vBackCoordinate.z -= spacementBetweenFruitZ;
-    //     var cherrieFront = Instantiate(pickupPrefab, transform);
-    //     var cherrieBack = Instantiate(pickupPrefab, transform);
-    //     cherrieFront.transform.position = vFrontCoordinate;
-    //     cherrieBack.transform.position = vBackCoordinate;
-    // }
-
 
 }

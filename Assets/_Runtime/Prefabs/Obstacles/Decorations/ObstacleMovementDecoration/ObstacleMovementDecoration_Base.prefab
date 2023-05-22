@@ -42,7 +42,7 @@ AudioSource:
   m_GameObject: {fileID: 8604386994960580414}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: -8605089138821175006, guid: c07e61c505e4dfe4b96c2d76721cda45, type: 2}
+  OutputAudioMixerGroup: {fileID: -1450324270061248655, guid: c07e61c505e4dfe4b96c2d76721cda45, type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -141,8 +141,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1cfbcd2bcf4002d4d8131e3253646010, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  decorationSpawners: []
-  laneDistanceX: 4
-  initialSpeed: 10
-  animator: {fileID: 0}
+  collisionAudio: {fileID: 0}
+  collisionAnimation: {fileID: 0}
   animator: {fileID: 0}

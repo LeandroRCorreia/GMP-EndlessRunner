@@ -111,10 +111,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   startZ: {fileID: 8995523575246198678}
   endZ: {fileID: 1865861200250071666}
-  coordinatesLane:
-  - -1.5
-  - 0
-  - 1.5
   obstacleSpawners: []
   decorationSpawner: {fileID: 5661982142738199326}
   pickupSpawnChance: 0.25

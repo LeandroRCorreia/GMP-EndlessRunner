@@ -73,7 +73,7 @@ GameObject:
   - component: {fileID: 2435896724464124698}
   - component: {fileID: 3476335118741303239}
   m_Layer: 0
-  m_Name: PickupSpawner
+  m_Name: PickupLineSpawner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -108,7 +108,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84f8aa2802641da4c8be9a0b54b0d36d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pickupPrefab: {fileID: 3026895558855954312, guid: 8579c5f11b52a704eb55324b37af3ff0, type: 3}
-  spacementBetweenFruitZ: 1.25
+  cherriePrefab: {fileID: 5006189579774805217, guid: 3cdf305e81d40d24dba2a607e24e246b, type: 3}
+  peanutPrefab: {fileID: 3177430733291295643, guid: 10c3e2ca56b6a8d49a1c1cdee432966c, type: 3}
+  peanutChance: 0.1
+  powerUpsOptions:
+  - {fileID: 2495884411350795959, guid: c5762611e12f1bb4ebee16e151497d64, type: 3}
+  powerUpChance: 0.075
+  spaceBetweenPickups: 1.25
   start: {fileID: 9038151461754148006}
   end: {fileID: 4233294323904047023}

@@ -1,18 +1,10 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using TMPro;
 
 public class MainHUD : MonoBehaviour
 {
-
     [SerializeField] private PlayerController player;
     [SerializeField] private GameMode gameMode;
-
-    [Header("Text")]
-    [SerializeField] private TextMeshProUGUI scoreTxt;
-    [SerializeField] private TextMeshProUGUI travelledDistanceTxt;
-    [SerializeField] private TextMeshProUGUI cherriesPickedText;
 
     [Header("Overlays")]
     [SerializeField] private GameObject hudOverlay;
@@ -25,13 +17,6 @@ public class MainHUD : MonoBehaviour
     {
         ShowWaitForStartGameOverlay();    
     }
-
-    private void LateUpdate() 
-    {
-        scoreTxt.text = $"Score : {gameMode.Score}";
-        travelledDistanceTxt.text = $"{gameMode.TravelledDistance}m";
-        cherriesPickedText.text = $"{gameMode.CherriesPicked}";
-    }
     
     public IEnumerator PerformCountDown(int startGameDelay)
     {
@@ -42,8 +27,6 @@ public class MainHUD : MonoBehaviour
         settingsOverlay.SetActive(false);
 
         yield return StartCoroutine(countDownStartGameOverlay.PerformCountDown(startGameDelay));
-        
-
     }
 
     public void ShowWaitForStartGameOverlay()

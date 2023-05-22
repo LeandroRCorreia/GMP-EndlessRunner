@@ -10,8 +10,7 @@ public class StartGameOverlay : MonoBehaviour
     [SerializeField] private TextMeshProUGUI highestScoreText;
     [SerializeField] private TextMeshProUGUI lastScoreText;
     [SerializeField] private TextMeshProUGUI totalCherriesPickedText;
-
-
+    [SerializeField] private TextMeshProUGUI totalPeanutsPickedText;
 
 //TODO: when overlay is actived in scene, this Unity function is not called
     private void OnEnable() 
@@ -25,7 +24,8 @@ public class StartGameOverlay : MonoBehaviour
         highestScoreText.text = $"Highest Score\n{gameMode.SaveGame.CurrentSaveData.ScoreStatusData.highestScore}";
         lastScoreText.text = $"Last Score\n{gameMode.SaveGame.CurrentSaveData.ScoreStatusData.lastScore}";
         totalCherriesPickedText.text = $"{gameMode.SaveGame.CurrentSaveData.ScoreStatusData.totalCherriesPicked}";
+        totalPeanutsPickedText.text = $"{gameMode.SaveGame.CurrentSaveData.ScoreStatusData.totalPeanutsPicked}";
+        
     }
-
 
 }

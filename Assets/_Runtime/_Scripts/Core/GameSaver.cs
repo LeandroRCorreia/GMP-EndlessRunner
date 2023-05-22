@@ -7,6 +7,7 @@ public class ScoreStatusData
     public int highestScore = 0;
     public int lastScore = 0;
     public int totalCherriesPicked = 0;
+    public int totalPeanutsPicked = 0;
 }
 
 public class AudioPreferencesData
