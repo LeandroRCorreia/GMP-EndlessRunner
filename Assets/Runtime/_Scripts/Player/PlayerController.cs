@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -21,6 +22,8 @@ public class PlayerController : MonoBehaviour
     private Vector3 initialPosition;
 
     private float targetPositionX;
+
+    public event Action PlayerDeathEvent;
 
     public Vector3 InitialPosition => initialPosition;
     public float ForwardSpeed  {get; set; }
@@ -166,9 +169,16 @@ public class PlayerController : MonoBehaviour
         rollCollider.enabled = false;
     }
 
-    public void Die()
+    public void OnCollidedWithObstacle()
     {
         if(IsInvicible) return;
+        if(IsDead) return;
+
+        Die();
+    }
+
+    private void Die()
+    {
         IsDead = false;
         targetPositionX = transform.position.x;
         ForwardSpeed = 0;
@@ -176,6 +186,8 @@ public class PlayerController : MonoBehaviour
         StopRoll();
         StopJump();
         DisableColliders();
+
+        PlayerDeathEvent?.Invoke();
     }
 
 }

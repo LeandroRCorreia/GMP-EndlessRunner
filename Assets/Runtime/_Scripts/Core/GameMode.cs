@@ -63,6 +63,7 @@ public class GameMode : MonoBehaviour
     private void Start() 
     {
         SaveGame.LoadGame();
+        player.PlayerDeathEvent += OnPlayerDeath;
     }   
 
     private void LateUpdate() 
@@ -121,9 +122,14 @@ public class GameMode : MonoBehaviour
     
     #endregion
 
+    public void OnPlayerDeath()
+    {
+        OnGameOver();
+    }
+
     public void OnGameOver()
     {
-        if(player.IsInvicible) return;
+        
         int highestScore = Score > SaveGame.CurrentSaveData.ScoreStatusData.highestScore ?
          Score : SaveGame.CurrentSaveData.ScoreStatusData.highestScore;
         ScoreStatusData saveData = new ScoreStatusData()
@@ -153,6 +159,12 @@ public class GameMode : MonoBehaviour
 #else
         Application.Quit();
 #endif
+
+    }
+
+    private void OnDestroy() 
+    {
+        player.PlayerDeathEvent -= OnPlayerDeath;
 
     }
 

@@ -12,6 +12,11 @@ public class PlayerAnimationController : MonoBehaviour
         player = GetComponent<PlayerController>();
     }
 
+    private void Start() 
+    {
+        player.PlayerDeathEvent += OnPlayerDeath;    
+    }
+
     private void Update()
     {
         animator.SetBool(PlayerAnimationConstants.IsJumping, player.IsJumping);
@@ -34,10 +39,14 @@ public class PlayerAnimationController : MonoBehaviour
         animator.SetTrigger(PlayerAnimationConstants.StartGameTrigger);
     }
 
-    public void Die()
+    private void OnPlayerDeath()
     {
-        if(player.IsInvicible) return;
         animator.SetTrigger(PlayerAnimationConstants.DieTrigger);
+    }
+
+    private void OnDestroy() 
+    {
+        player.PlayerDeathEvent -= OnPlayerDeath;    
     }
 
 }

@@ -47,9 +47,8 @@ public class Obstacle : MonoBehaviour, IPlayerCollisionReact
 
     public void ReactPlayerCollision(in PlayerCollisionInfo playerCollisionInfo)
     {
-        playerCollisionInfo.PlayerControl.Die();
-        playerCollisionInfo.playerAC.Die();
-        playerCollisionInfo.gameMode.OnGameOver();
+
+        playerCollisionInfo.PlayerControl.OnCollidedWithObstacle();
 
         PlayCollisionFeedBack(playerCollisionInfo.colliderFromReaction);
     }
